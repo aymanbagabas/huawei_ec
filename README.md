@@ -16,6 +16,10 @@ $ sudo huawei_ec [get|set] [batpro|batthre|fnlk] [value]
 * `batthre` - setting battery threshold min and max values
 * `fnlk` - setting FN key lock on and off
 
+## TODO
+* Analyze ACPI and DSDT tables for asl methods that performs these functionality.
+* `huawei_acpi` kernel module that integrate these features.
+
 ## References
 1. [andmarios](https://aymanbagabas.com/2018/07/23/archlinux-on-matebook-x-pro.html#comment-4412527488)
 2. `ec_sys` kernel module.
