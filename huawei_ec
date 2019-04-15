@@ -102,10 +102,14 @@ case "$1" in
 	"set")
 		case "$2" in
 			"batpro")
+				read_ec "${pins[$2]}"
+				v1="$(printf '0x%x' "$?")"
 				if [ "$3" == "on" ]; then
-					write_ec "${pins[$2]}" 0xc0
+					# Turn the second MSB to 1
+					write_ec "${pins[$2]}" "$(printf '0x%x' $(($v1 | 0x40)))"
 				elif [ "$3" == "off" ]; then
-					write_ec "${pins[$2]}" 0x80
+					# Turn the second MSB to 0
+					write_ec "${pins[$2]}" "$(printf '0x%x' $(($v1 & 0xbf)))"
 				else
 					_error
 				fi
@@ -124,11 +128,13 @@ case "$1" in
 				read_ec "${val[1]}"
 				v2=$(printf '0x%x' "$?")
 				if [ "$3" == "on" ]; then
-					[ "$(($v1 & 0x01))" -eq 0 ] && write_ec "${val[0]}" "$(printf '0x%x' $(($v1 + 1)))"
-					[ "$(($v2 & 0x01))" -eq 0 ] && write_ec "${val[1]}" "$(printf '0x%x' $(($v2 + 1)))"
+					# Turn the LSB to 1
+					write_ec "${val[0]}" "$(printf '0x%x' $(($v1 | 0x1)))"
+					write_ec "${val[1]}" "$(printf '0x%x' $(($v2 | 0x1)))"
 				elif [ "$3" == "off" ]; then
-					[ "$(($v1 & 0x01))" -eq 1 ] && write_ec "${val[0]}" "$(printf '0x%x' $(($v1 - 1)))"
-					[ "$(($v2 & 0x01))" -eq 1 ] && write_ec "${val[1]}" "$(printf '0x%x' $(($v2 - 1)))"
+					# Turn the LSB to 0
+					write_ec "${val[0]}" "$(printf '0x%x' $(($v1 & 0xfe)))"
+					write_ec "${val[1]}" "$(printf '0x%x' $(($v2 & 0xfe)))"
 				else
 					_error
 				fi
@@ -142,8 +148,9 @@ case "$1" in
 		case "$2" in
 			"batpro")
 				read_ec "${pins[$2]}"
-				res=$(printf '0x%x' "$?")
-				if [ "$res" == "0xc0" ]; then
+				# Check the 2nd MSB
+				res="$((($(printf '0x%x' "$?") & 0x40) >> 6))"
+				if [ "$res" -eq 1 ]; then
 					echo "on"
 				else
 					echo "off"
