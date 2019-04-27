@@ -1,3 +1,5 @@
+**Please see [Huawei-WMI](https://github.com/aymanbagabas/Huawei-WMI), this project is discontinued.**
+
 # Huawei EC
 
 **Disclaimer**: this script was written to work with model `MACH-WX9` i.e. Matebook X Pro (2018). The author is not to blame if this script(s) breaks your system.
